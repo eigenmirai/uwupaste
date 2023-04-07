@@ -22,10 +22,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSec) throws Exception {
-        httpSec.authorizeHttpRequests(requests -> requests.requestMatchers("/", "/home", "/paste", "/paste/**", "/upload", "/assets/**", "/stats")
-                        .permitAll().anyRequest().authenticated())
-                .formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/home", true)
-                        .failureUrl("/login?error").permitAll())
+        httpSec.authorizeHttpRequests(requests ->
+                        requests.requestMatchers("/", "/home", "/paste", "/paste/**", "/upload", "/assets/**", "/stats", "/error", "/favicon.ico")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
+                .formLogin(login ->
+                        login.loginPage("/login")
+                                .defaultSuccessUrl("/home", true)
+                                .failureUrl("/login?error").permitAll())
                 .logout(logout -> logout.permitAll());
         httpSec.csrf().disable();
         return httpSec.build();

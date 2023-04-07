@@ -49,7 +49,12 @@
     </div>
 </nav>
 <div class="container">
-    <div class="border rounded p-2" style="margin-top: 10px;">
+    <div class="jumbotron jumbotron-fluid">
+        <h1 class="display-4">Statistics</h1>
+        <hr class="my-4">
+    </div>
+    <div class="p-2" style="margin-top: 10px;">
+        <h2>Language Distribution</h2>
         <div class="progress-stacked">
             <div th:each="e : ${distribution}" class="progress" role="progressbar" th:aria-valuenow="${e.percentage()}" aria-valuemin="0" aria-valuemax="100" th:style="'width: '+${e.percentage()}+'%'">
                 <div class="progress-bar" th:style="'background-color:'+${e.lang().getColor()}+';'"></div>
@@ -61,16 +66,15 @@
             </div>
         </ul>
     </div>
-
-
-    <div style="margin-top: 10px;">
+    <div class="p-2" style="margin-top: 10px;">
+        <h2>Latest Pastes</h2>
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Title</th>
                 <th scope="col">Language</th>
-                <th scope="col">Timestamp</th>
+                <th scope="col">Upload Date</th>
             </tr>
             </thead>
             <tbody>
@@ -78,7 +82,7 @@
                 <td th:text="${p.getId()}"></td>
                 <td><a th:href="'/paste/' + ${p.getId()}" th:text="${p.getTitle()}"></a></td>
                 <td><span class="badge" th:text="${p.language().getPrettyName()}" th:style="'background-color: '+${p.language().getColor()}+';'"></span></td>
-                <td th:text="${p.getTimestamp()}"></td>
+                <td th:text="${p.formatTimestamp()}"></td>
             </tr>
             </tbody>
         </table>

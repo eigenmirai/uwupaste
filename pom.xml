@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>xyz.mirai666</groupId>
 	<artifactId>uwupaste</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>uwupaste</name>
 	<description>barely usable pasting service</description>
 	<properties>

@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Paste {
-    static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy").withZone(ZoneId.systemDefault());;
+    static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").withZone(ZoneId.systemDefault());;
 
     @Id
     private String id;

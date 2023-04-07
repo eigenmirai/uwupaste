@@ -1,25 +1,49 @@
 package xyz.mirai666.uwupaste.view;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import xyz.mirai666.uwupaste.PasteRepository;
 import xyz.mirai666.uwupaste.dto.StatsDto;
+import xyz.mirai666.uwupaste.model.HttpStatusCode;
 import xyz.mirai666.uwupaste.model.Language;
 import xyz.mirai666.uwupaste.util.Util;
 import xyz.mirai666.uwupaste.model.Paste;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.StreamSupport;
 
 @Controller
-public class TemplateController {
+public class TemplateController implements ErrorController {
     private PasteRepository repo;
+    public static Map<String, HttpStatusCode> httpStatusCodeMap;
+
+    static {
+        String statusCodeListJsonUrl = "https://raw.githubusercontent.com/anonkey/http-status-code-json/master/index.json";
+        try (Scanner scanner = new Scanner(new URL(statusCodeListJsonUrl).openStream(), StandardCharsets.UTF_8)) {
+            scanner.useDelimiter("\\A");
+            if (scanner.hasNext()) {
+                String json = scanner.next();
+                ObjectMapper mapper = new ObjectMapper();
+                httpStatusCodeMap = mapper.readValue(json, new TypeReference<>() {});
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     @Autowired
     public TemplateController(PasteRepository repo) {
@@ -55,6 +79,10 @@ public class TemplateController {
     public String getPasteView(Model model, @PathVariable String id) {
         Optional<Paste> opt = this.repo.findById(id);
         if (opt.isEmpty()) { // paste not found
+            HttpStatusCode status = httpStatusCodeMap.get("404");
+            model.addAttribute("code", status.getCode());
+            model.addAttribute("message", status.getMessage());
+            model.addAttribute("description", status.getDescription());
             return "error";
         }
         Paste paste = opt.get();
@@ -104,10 +132,12 @@ public class TemplateController {
         return "stats";
     }
 
-    @GetMapping("/error")
+    @RequestMapping("/error")
     public String getErrorView(Model model, HttpServletRequest request) {
-        String code = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString();
-        model.addAttribute("code", code);
+        HttpStatusCode status = httpStatusCodeMap.get(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString());
+        model.addAttribute("code", status.getCode());
+        model.addAttribute("message", status.getMessage());
+        model.addAttribute("description", status.getDescription());
         return "error";
     }
 }

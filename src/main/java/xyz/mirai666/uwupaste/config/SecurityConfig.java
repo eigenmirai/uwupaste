@@ -5,12 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import xyz.mirai666.uwupaste.UserRepository;
 
@@ -24,38 +20,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSec) throws Exception {
         httpSec
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers("/", "/home", "/paste", "/paste/**", "/upload", "/assets/**", "/stats", "/error", "/favicon.ico")
+                        requests.requestMatchers("/", "/home", "/paste", "/paste/**", "/upload", "/assets/**", "/stats", "/error", "/register", "/profile/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .formLogin(login ->
                         login.loginPage("/login")
                                 .defaultSuccessUrl("/home", true)
-                                .failureUrl("/login?error").permitAll())
-                .logout(logout -> logout.permitAll());
+                                .failureUrl("/login?error")
+                                .permitAll())
+                .logout(logout -> logout.logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/home")
+                        .permitAll());
         httpSec.csrf().disable();
         return httpSec.build();
     }
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user1 = User.withUsername("user1")
-                .password(passwordEncoder().encode("user1Pass"))
-                .roles("USER")
-                .build();
-        UserDetails user2 = User.withUsername("user2")
-                .password(passwordEncoder().encode("user2Pass"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("adminPass"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2, admin);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

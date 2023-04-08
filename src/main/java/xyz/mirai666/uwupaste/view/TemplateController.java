@@ -6,21 +6,27 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import xyz.mirai666.uwupaste.PasteRepository;
+import xyz.mirai666.uwupaste.UserRepository;
 import xyz.mirai666.uwupaste.dto.StatsDto;
 import xyz.mirai666.uwupaste.model.HttpStatusCode;
 import xyz.mirai666.uwupaste.model.Language;
+import xyz.mirai666.uwupaste.model.User;
 import xyz.mirai666.uwupaste.util.Util;
 import xyz.mirai666.uwupaste.model.Paste;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -28,7 +34,8 @@ import java.util.stream.StreamSupport;
 
 @Controller
 public class TemplateController implements ErrorController {
-    private PasteRepository repo;
+    private PasteRepository pasteRepo;
+    private UserRepository userRepo;
     public static Map<String, HttpStatusCode> httpStatusCodeMap;
 
     static {
@@ -47,19 +54,20 @@ public class TemplateController implements ErrorController {
     }
 
     @Autowired
-    public TemplateController(PasteRepository repo) {
-        this.repo = repo;
-        Util.saveTestPastes(repo);
+    public TemplateController(PasteRepository pasteRepo, UserRepository userRepo) {
+        this.pasteRepo = pasteRepo;
+        this.userRepo = userRepo;
+        Util.saveTestPastes(pasteRepo);
     }
 
     @GetMapping({"/", "/home"})
     public String getHomeView(Model model) {
         AtomicLong lines = new AtomicLong();
-        this.repo.findAll().forEach(e -> lines.addAndGet(e.getText().lines().count()));
+        this.pasteRepo.findAll().forEach(e -> lines.addAndGet(e.getText().lines().count()));
         model.addAttribute("lines", lines.toString());
-        model.addAttribute("pasteN", this.repo.count());
+        model.addAttribute("pasteN", this.pasteRepo.count());
 
-        List<Paste> latestPastes = StreamSupport.stream(this.repo.findAll().spliterator(), false)
+        List<Paste> latestPastes = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(6) // show 5 entries
                 .toList();
@@ -78,7 +86,7 @@ public class TemplateController implements ErrorController {
 
     @GetMapping("/paste/{id}")
     public String getPasteView(Model model, @PathVariable String id) {
-        Optional<Paste> opt = this.repo.findById(id);
+        Optional<Paste> opt = this.pasteRepo.findById(id);
         if (opt.isEmpty()) { // paste not found
             HttpStatusCode status = httpStatusCodeMap.get("404");
             model.addAttribute("code", status.getCode());
@@ -94,7 +102,7 @@ public class TemplateController implements ErrorController {
         model.addAttribute("size", String.valueOf((float) paste.getBytes()/1024).substring(0, 4) + "KB");
         model.addAttribute("timestamp", paste.formatTimestamp());
 
-        List<Paste> latestPastes = StreamSupport.stream(this.repo.findAll().spliterator(), false)
+        List<Paste> latestPastes = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(6) // show 5 entries
                 .toList();
@@ -105,11 +113,11 @@ public class TemplateController implements ErrorController {
 
     @GetMapping("/stats")
     public String getStatsView(Model model) {
-        int amount = (int) this.repo.count();
+        int amount = (int) this.pasteRepo.count();
         model.addAttribute("amount", amount);
 
         // get all pastes and sort them by date added (reversed)
-        List<Paste> latest = StreamSupport.stream(this.repo.findAll().spliterator(), false)
+        List<Paste> latest = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(10) // don't show all entries
                 .toList();
@@ -118,7 +126,7 @@ public class TemplateController implements ErrorController {
 
         // compute language distribution
         Map<String, Integer> distributionAbs = new HashMap<>();
-        for (Paste paste : this.repo.findAll()) {
+        for (Paste paste : this.pasteRepo.findAll()) {
             if (distributionAbs.containsKey(paste.getLang())) {
                 int c = distributionAbs.get(paste.getLang());
                 distributionAbs.put(paste.getLang(), c + 1);
@@ -132,6 +140,30 @@ public class TemplateController implements ErrorController {
         distribution.sort(Comparator.comparing(StatsDto::percentage).reversed());
         model.addAttribute("distribution", distribution);
         return "stats";
+    }
+
+    @GetMapping("/profile")
+    public String getOwnProfileView(Model model, HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        return "redirect:/profile/" + principal.getName();
+    }
+
+    @GetMapping("/profile/{username}")
+    public String getProfileView(Model model, @PathVariable String username) {
+        User user = this.userRepo.findByUsername(username);
+        if (user == null) {
+            HttpStatusCode status = httpStatusCodeMap.get("404");
+            model.addAttribute("code", status.getCode());
+            model.addAttribute("message", status.getMessage());
+            model.addAttribute("description", status.getDescription());
+            return "error";
+        }
+        model.addAttribute("user", user);
+        System.out.println(user);
+        return "profile";
     }
 
     @RequestMapping("/error")

@@ -15,7 +15,7 @@
     <title th:text="${user.getUsername()}"></title>
 </head>
 <body>
-<div th:replace="home :: navbar"></div>
+<div th:replace="~{home :: navbar}"></div>
 
     <p th:text="${user.getUsername()}"></p>
     <p th:text="${user.getId()}"></p>

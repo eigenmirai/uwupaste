@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 @Controller
@@ -126,7 +127,8 @@ public class TemplateController implements ErrorController {
             }
         }
         List<StatsDto> distribution = new ArrayList<>();
-        distributionAbs.forEach((k, v) -> distribution.add(new StatsDto(Language.languageMap.get(k), (v.floatValue()/(float)amount)*100f)));
+        Function<Integer, Float> calc = (x) -> Math.round((x/(float)amount)*100f * 100f) / 100f;
+        distributionAbs.forEach((k, v) -> distribution.add(new StatsDto(Language.languageMap.get(k), calc.apply(v))));
         distribution.sort(Comparator.comparing(StatsDto::percentage).reversed());
         model.addAttribute("distribution", distribution);
         return "stats";

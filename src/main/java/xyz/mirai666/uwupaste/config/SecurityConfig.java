@@ -22,7 +22,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSec) throws Exception {
-        httpSec.authorizeHttpRequests(requests ->
+        httpSec
+                .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/", "/home", "/paste", "/paste/**", "/upload", "/assets/**", "/stats", "/error", "/favicon.ico")
                                 .permitAll()
                                 .anyRequest()

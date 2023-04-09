@@ -20,7 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     public UserDetailsServiceImpl(UserRepository repo, PasswordEncoder encoder) {
         this.repo = repo;
-        this.repo.save(new User("user", "", encoder.encode("password")));
+        this.repo.save(new User("user", "email@email.com", encoder.encode("password")));
+        this.repo.save(User.anon);
     }
 
     @Override
@@ -30,6 +31,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
-
-
 }

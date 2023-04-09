@@ -4,11 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +21,13 @@ import xyz.mirai666.uwupaste.model.User;
 import xyz.mirai666.uwupaste.util.Util;
 import xyz.mirai666.uwupaste.model.Paste;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
@@ -48,6 +48,7 @@ public class TemplateController implements ErrorController {
                 httpStatusCodeMap = mapper.readValue(json, new TypeReference<>() {});
             }
         } catch (IOException e) {
+            Util.logColored(Level.ERROR, Color.red, "Failed to fetch HTTP error code list, error handling will fail. (%s)", e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -69,7 +70,7 @@ public class TemplateController implements ErrorController {
 
         List<Paste> latestPastes = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
-                .limit(6) // show 5 entries
+                .limit(6) // show 6 entries
                 .toList();
         model.addAttribute("latest", latestPastes);
         model.addAttribute("latestN", latestPastes.size());
@@ -162,7 +163,8 @@ public class TemplateController implements ErrorController {
             return "error";
         }
         model.addAttribute("user", user);
-        System.out.println(user);
+        model.addAttribute("pastes", user.getPastes());
+        model.addAttribute("pasteN", user.getPastes().size());
         return "profile";
     }
 

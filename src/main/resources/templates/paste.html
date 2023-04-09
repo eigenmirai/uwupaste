@@ -62,7 +62,7 @@
             <p class="card-text" th:text="${p.getPreview()}"></p>
           </div>
           <div class="card-footer" style="align: center;">
-            <small class="text-body-secondary" th:text="'Uploaded ' + ${p.formatTimestamp()} + ' by ' + ${p.getUploaderUsername()}"></small>
+            <small class="text-body-secondary" th:text="'Uploaded ' + ${p.formatTimestamp()} + ' by ' + ${p.getUploader().getUsername()}"></small>
           </div>
 
         </div>

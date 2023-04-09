@@ -1,22 +1,22 @@
 package xyz.mirai666.uwupaste.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import xyz.mirai666.uwupaste.util.StringListConverter;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "users") // this is important because "user" is a reserved keyword in H2 sql, so there will be a syntax error
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "pastes")
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+    public static User anon = new User("anonymous", "", "");
+
     @Id
     private String id;
     @Column(unique = true, nullable = false)
@@ -26,10 +26,14 @@ public class User {
     private String password;
     private Instant created;
     @Column(length = 10000)
-    @Convert(converter = StringListConverter.class)
-    private List<String> pastes; // paste ids
+    @OneToMany(mappedBy = "uploader")
+    @JsonManagedReference
+    private Set<Paste> pastes = new HashSet<>(); // paste ids
 
     public User(String username, String email, String password) {
-        this(UUID.randomUUID().toString(), username, email, password, Instant.now(), new ArrayList<>());
+        this(UUID.randomUUID().toString(), username, email, password, Instant.now(), new HashSet<>());
+    }
+    public void addPaste(Paste s) {
+        this.pastes.add(s);
     }
 }

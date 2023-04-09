@@ -1,12 +1,18 @@
 package xyz.mirai666.uwupaste.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import xyz.mirai666.uwupaste.PasteRepository;
+import xyz.mirai666.uwupaste.UwUPasteApplication;
 import xyz.mirai666.uwupaste.model.Paste;
 
+import java.awt.*;
 import java.time.Instant;
 import java.util.List;
 
 public class Util {
+    static Logger logger = LoggerFactory.getLogger(UwUPasteApplication.class);
     public static java.util.List<Paste> examplePastes = List.of(
             new Paste("example1", "Rust FFT", "pub fn fast_fourier_transform(input: &[f64], input_permutation: &[usize]) -> Vec<Complex64> {\n" +
                     "    let n = input.len();\n" +
@@ -104,5 +110,10 @@ public class Util {
     );
     public static void saveTestPastes(PasteRepository repo) {
         repo.saveAll(examplePastes);
+    }
+
+    public static void logColored(Level level, Color color, String s, Object... param) {
+        String ansi = String.format("\033[38;2;%d;%d;%dm", color.getRed(), color.getGreen(), color.getBlue());
+        logger.atLevel(level).log(ansi + String.format(s, param) + "\033[0m");
     }
 }

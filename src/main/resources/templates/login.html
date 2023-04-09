@@ -17,22 +17,18 @@
 <body>
 <div th:replace="~{home :: navbar}"></div>
 
-
 <div class="login-page">
-    <div class="form bg-dark">
+    <div class="form bg-dark border rounded p-3">
         <div th:if="${param.error}" class="text-danger">
             Invalid username or password.
         </div>
 
         <form class="register-form" th:action="@{/register}" method="post">
-            <label for="exampleInputUsername1">Username</label>
             <input type="text" name="username" class="form-control" id="exampleInputUsername1" aria-describedby="uname-exists-text" placeholder="Username">
             <small th:if="${param.usernameExists}" id="uname-exists-text" class="form-text text-muted text-danger">Please choose a unique email.</small>
 
-            <label for="exampleInputPassword1">Password</label>
             <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
 
-            <label for="exampleInputEmail1">Email address</label>
             <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="email-exists-text" placeholder="Enter email">
             <small th:if="${param.emailExists}" id="email-exists-text" class="form-text text-muted text-danger">Please choose a unique email.</small>
 
@@ -40,10 +36,11 @@
             <p class="message">Already registered? <a href="#">Sign In</a></p>
         </form>
         <form class="login-form" th:action="@{/login}" method="post">
-            <label for="inputUsername2">Username</label>
             <input type="text" name="username" class="form-control" id="inputUsername2" placeholder="Username">
-            <label for="inputPassword2">Password</label>
+
+
             <input type="password" name="password" class="form-control" id="inputPassword2" placeholder="Password">
+
             <input type="submit" class="submit-button" value="Sign in">
             <p class="message">Not registered? <a href="#">Create an account</a></p>
         </form>

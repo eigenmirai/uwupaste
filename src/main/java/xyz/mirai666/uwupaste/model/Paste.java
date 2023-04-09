@@ -1,8 +1,7 @@
 package xyz.mirai666.uwupaste.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
@@ -27,14 +26,17 @@ public class Paste {
     private String lang;
     private int bytes;
     private Instant timestamp;
-    private String uploaderUsername;
+    @ManyToOne
+    @JoinColumn(name = "uploader")
+    @JsonBackReference
+    private User uploader;
 
     public Paste(String title, String text, String lang) {
-        this(UUID.randomUUID().toString(), title, text, lang, text.getBytes().length, Instant.now(), "guest");
+        this(UUID.randomUUID().toString(), title, text, lang, text.getBytes().length, Instant.now(), User.anon);
     }
 
     public Paste(String id, String title, String text, String lang, Instant timestamp) {
-        this(id, title, text, lang, text.getBytes().length, timestamp, "guest");
+        this(id, title, text, lang, text.getBytes().length, timestamp, User.anon);
     }
 
     public String getPreview() {

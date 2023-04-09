@@ -22,7 +22,7 @@ public class UserController {
     public ResponseEntity<?> register(@RequestParam("username") String username,
                                       @RequestParam("password") String password,
                                       @RequestParam("email") String email) {
-        if ("guest".equals(username)) {
+        if ("guest".equals(username) || "anonymous".equals(username)) {
             return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).build();
         }
         if (this.repo.findByUsername(username) != null) {

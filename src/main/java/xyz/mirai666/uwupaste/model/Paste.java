@@ -26,8 +26,11 @@ public class Paste {
     private String lang;
     private int bytes;
     private Instant timestamp;
+    // https://gist.github.com/danthe1st/a7cab8cad5a3044b3562e4f83530c12c
     @ManyToOne
     @JoinColumn(name = "uploader")
+    // this is important, because User references this class too, so there will be infinite recursion when jackson tries to serialize either
+    // see https://stackoverflow.com/a/18288939
     @JsonBackReference
     private User uploader;
 

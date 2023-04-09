@@ -27,8 +27,8 @@ public class User {
     private Instant created;
     @Column(length = 10000)
     @OneToMany(mappedBy = "uploader")
-    @JsonManagedReference
-    private Set<Paste> pastes = new HashSet<>(); // paste ids
+    @JsonManagedReference // https://stackoverflow.com/a/18288939
+    private Set<Paste> pastes = new HashSet<>();
 
     public User(String username, String email, String password) {
         this(UUID.randomUUID().toString(), username, email, password, Instant.now(), new HashSet<>());

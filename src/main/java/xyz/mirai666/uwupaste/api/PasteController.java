@@ -1,7 +1,6 @@
 package xyz.mirai666.uwupaste.api;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,14 +11,11 @@ import xyz.mirai666.uwupaste.model.Paste;
 import xyz.mirai666.uwupaste.dto.PasteDto;
 import xyz.mirai666.uwupaste.model.User;
 
-import java.security.Principal;
-
 @RestController
+@RequiredArgsConstructor
 public class PasteController {
-    @Autowired
-    private PasteRepository pasteRepo;
-    @Autowired
-    private UserRepository userRepo;
+    private final PasteRepository pasteRepo;
+    private final UserRepository userRepo;
 
     @PostMapping("/paste")
     Paste postPaste(@RequestBody PasteDto payload, Authentication authentication) {

@@ -15,7 +15,7 @@
     <title th:text="${title}"></title>
 </head>
 <body>
-<div th:replace="~{home :: navbar}"></div>
+<div th:replace="~{fragments :: navbar}"></div>
 
 <div class="container">
     <div class="jumbotron jumbotron-fluid">
@@ -43,9 +43,7 @@
         </form>
         <br>
         <button id="submit-button" class="btn btn-primary">Create</button>
-
     </div>
-
 </div>
 </body>
 </html>

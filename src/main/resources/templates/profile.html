@@ -15,32 +15,14 @@
     <title th:text="${user.getUsername()}"></title>
 </head>
 <body>
-<div th:replace="~{home :: navbar}"></div>
+<div th:replace="~{fragments :: navbar}"></div>
 
     <p th:text="${user.getUsername()}"></p>
     <p th:text="${user.getId()}"></p>
     <p th:text="${user.getEmail()}"></p>
 
     <div class="container">
-        <div class="p-3" th:unless="${pasteN == 0}">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col" th:each="p : ${pastes}">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <span th:text="${p.language().getPrettyName()}" style="margin-right: 10px;"></span><span class="badge text-bg-info" th:if="${p.when() < 86400}">New</span>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title"><a th:text="${p.getTitle()}" th:href="'/paste/' + ${p.getId()}"></a></h5>
-                            <p class="card-text" th:text="${p.getPreview()}"></p>
-                        </div>
-                        <div class="card-footer" style="align: center;">
-                            <small class="text-body-secondary" th:text="'Uploaded ' + ${p.formatTimestamp()} + ' by ' + ${p.getUploader().getUsername()}"></small>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div th:replace="~{fragments :: listPastes(pastes=${pastes})}"></div>
     </div>
 </body>
 </html>

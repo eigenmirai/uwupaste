@@ -75,7 +75,6 @@ public class TemplateController implements ErrorController {
                 .limit(6) // show 6 entries
                 .toList();
         model.addAttribute("latest", latestPastes);
-        model.addAttribute("latestN", latestPastes.size());
         model.addAttribute("examples", Util.examplePastes);
         return "home";
     }
@@ -105,12 +104,11 @@ public class TemplateController implements ErrorController {
         model.addAttribute("size", String.valueOf((float) paste.getBytes()/1024).substring(0, 4) + "KB");
         model.addAttribute("timestamp", paste.formatTimestamp());
 
-        List<Paste> latestPastes = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
+        List<Paste> latestPastes = this.pasteRepo.findAll().stream()
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(6) // show 5 entries
                 .toList();
         model.addAttribute("latest", latestPastes);
-        model.addAttribute("latestN", latestPastes.size());
         return "paste";
     }
 

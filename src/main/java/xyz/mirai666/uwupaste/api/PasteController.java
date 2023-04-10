@@ -20,7 +20,7 @@ public class PasteController {
     private final UserRepository userRepo;
 
     @PostMapping("/paste")
-    public void postPaste(@RequestBody PasteDto payload, Authentication authentication) {
+    public Paste postPaste(@RequestBody PasteDto payload, Authentication authentication) {
         String title = payload.title().isBlank() ? "Untitled" : payload.title();
         Paste paste = new Paste(title, payload.text(), payload.lang());
         if (authentication != null) {
@@ -30,5 +30,6 @@ public class PasteController {
         }
         log.info("Added paste to database: {}", paste);
         this.pasteRepo.save(paste);
+        return paste;
     }
 }

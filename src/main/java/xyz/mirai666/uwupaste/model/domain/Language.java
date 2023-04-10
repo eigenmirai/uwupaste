@@ -1,4 +1,4 @@
-package xyz.mirai666.uwupaste.model;
+package xyz.mirai666.uwupaste.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

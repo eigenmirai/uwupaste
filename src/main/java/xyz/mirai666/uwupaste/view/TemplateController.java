@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -12,14 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import xyz.mirai666.uwupaste.PasteRepository;
-import xyz.mirai666.uwupaste.UserRepository;
-import xyz.mirai666.uwupaste.dto.StatsDto;
-import xyz.mirai666.uwupaste.model.HttpStatusCode;
-import xyz.mirai666.uwupaste.model.Language;
-import xyz.mirai666.uwupaste.model.User;
+import xyz.mirai666.uwupaste.repository.PasteRepository;
+import xyz.mirai666.uwupaste.repository.UserRepository;
+import xyz.mirai666.uwupaste.model.dto.StatsDto;
+import xyz.mirai666.uwupaste.model.domain.HttpStatusCode;
+import xyz.mirai666.uwupaste.model.domain.Language;
+import xyz.mirai666.uwupaste.model.entity.User;
 import xyz.mirai666.uwupaste.util.Util;
-import xyz.mirai666.uwupaste.model.Paste;
+import xyz.mirai666.uwupaste.model.entity.Paste;
 
 import java.awt.*;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 @Controller
 public class TemplateController implements ErrorController {
     private PasteRepository pasteRepo;
@@ -48,7 +50,7 @@ public class TemplateController implements ErrorController {
                 httpStatusCodeMap = mapper.readValue(json, new TypeReference<>() {});
             }
         } catch (IOException e) {
-            Util.logColored(Level.ERROR, Color.red, "Failed to fetch HTTP error code list, error handling will fail. (%s)", e.getMessage());
+            log.error(Util.color(Color.red, "Failed to fetch HTTP error code list, error handling will fail. (%s)", e.getMessage()));
             throw new RuntimeException(e);
         }
 
@@ -68,7 +70,7 @@ public class TemplateController implements ErrorController {
         model.addAttribute("lines", lines.toString());
         model.addAttribute("pasteN", this.pasteRepo.count());
 
-        List<Paste> latestPastes = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
+        List<Paste> latestPastes = this.pasteRepo.findAll().stream()
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(6) // show 6 entries
                 .toList();
@@ -118,7 +120,7 @@ public class TemplateController implements ErrorController {
         model.addAttribute("amount", amount);
 
         // get all pastes and sort them by date added (reversed)
-        List<Paste> latest = StreamSupport.stream(this.pasteRepo.findAll().spliterator(), false)
+        List<Paste> latest = this.pasteRepo.findAll().stream()
                 .sorted(Comparator.comparing(Paste::getTimestamp).reversed())
                 .limit(10) // don't show all entries
                 .toList();

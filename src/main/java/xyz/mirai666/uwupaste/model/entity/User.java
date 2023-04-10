@@ -1,4 +1,4 @@
-package xyz.mirai666.uwupaste.model;
+package xyz.mirai666.uwupaste.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

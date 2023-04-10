@@ -1,16 +1,18 @@
 package xyz.mirai666.uwupaste.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import xyz.mirai666.uwupaste.PasteRepository;
-import xyz.mirai666.uwupaste.UserRepository;
-import xyz.mirai666.uwupaste.model.Paste;
-import xyz.mirai666.uwupaste.dto.PasteDto;
-import xyz.mirai666.uwupaste.model.User;
+import xyz.mirai666.uwupaste.repository.PasteRepository;
+import xyz.mirai666.uwupaste.repository.UserRepository;
+import xyz.mirai666.uwupaste.model.entity.Paste;
+import xyz.mirai666.uwupaste.model.dto.PasteDto;
+import xyz.mirai666.uwupaste.model.entity.User;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PasteController {
@@ -18,7 +20,7 @@ public class PasteController {
     private final UserRepository userRepo;
 
     @PostMapping("/paste")
-    Paste postPaste(@RequestBody PasteDto payload, Authentication authentication) {
+    public void postPaste(@RequestBody PasteDto payload, Authentication authentication) {
         String title = payload.title().isBlank() ? "Untitled" : payload.title();
         Paste paste = new Paste(title, payload.text(), payload.lang());
         if (authentication != null) {
@@ -26,8 +28,7 @@ public class PasteController {
             paste.setUploader(user);
             user.addPaste(paste);
         }
-        System.out.println(paste.getId());
+        log.info("Added paste to database: {}", paste);
         this.pasteRepo.save(paste);
-        return paste;
     }
 }

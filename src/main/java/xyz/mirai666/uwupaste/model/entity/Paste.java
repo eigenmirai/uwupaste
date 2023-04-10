@@ -1,8 +1,9 @@
-package xyz.mirai666.uwupaste.model;
+package xyz.mirai666.uwupaste.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import xyz.mirai666.uwupaste.model.domain.Language;
 
 import java.time.Instant;
 import java.time.ZoneId;

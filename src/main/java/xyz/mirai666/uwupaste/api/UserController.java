@@ -1,7 +1,6 @@
 package xyz.mirai666.uwupaste.api;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import xyz.mirai666.uwupaste.UserRepository;
-import xyz.mirai666.uwupaste.model.User;
+import xyz.mirai666.uwupaste.repository.UserRepository;
+import xyz.mirai666.uwupaste.model.entity.User;
 
 @RestController
 @RequiredArgsConstructor

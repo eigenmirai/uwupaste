@@ -3,9 +3,9 @@ package xyz.mirai666.uwupaste.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
-import xyz.mirai666.uwupaste.PasteRepository;
+import xyz.mirai666.uwupaste.repository.PasteRepository;
 import xyz.mirai666.uwupaste.UwUPasteApplication;
-import xyz.mirai666.uwupaste.model.Paste;
+import xyz.mirai666.uwupaste.model.entity.Paste;
 
 import java.awt.*;
 import java.time.Instant;
@@ -112,8 +112,8 @@ public class Util {
         repo.saveAll(examplePastes);
     }
 
-    public static void logColored(Level level, Color color, String s, Object... param) {
+    public static String color(Color color, String s, Object... param) {
         String ansi = String.format("\033[38;2;%d;%d;%dm", color.getRed(), color.getGreen(), color.getBlue());
-        logger.atLevel(level).log(ansi + String.format(s, param) + "\033[0m");
+        return ansi + String.format(s, param) + "\033[0m";
     }
 }

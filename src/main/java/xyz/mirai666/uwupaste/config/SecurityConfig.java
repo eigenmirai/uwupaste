@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import xyz.mirai666.uwupaste.UserRepository;
+import xyz.mirai666.uwupaste.repository.UserRepository;
 
 @Configuration
 @EnableWebSecurity

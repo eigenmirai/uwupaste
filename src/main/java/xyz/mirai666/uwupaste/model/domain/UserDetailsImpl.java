@@ -1,17 +1,16 @@
-package xyz.mirai666.uwupaste.model;
+package xyz.mirai666.uwupaste.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import xyz.mirai666.uwupaste.model.entity.User;
 
 import java.util.Collection;
 
 @Getter
 @AllArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
     private User user;
 
     @Override

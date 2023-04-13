@@ -123,7 +123,6 @@ public class TemplateController implements ErrorController {
                 .limit(10) // don't show all entries
                 .toList();
         model.addAttribute("latest", latest);
-        model.addAttribute("latestN", latest.size());
 
         // compute language distribution
         Map<String, Integer> distributionAbs = new HashMap<>();

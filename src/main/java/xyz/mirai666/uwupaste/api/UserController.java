@@ -1,6 +1,7 @@
 package xyz.mirai666.uwupaste.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +13,15 @@ import xyz.mirai666.uwupaste.repository.UserRepository;
 import xyz.mirai666.uwupaste.model.entity.User;
 
 @RestController
-@RequiredArgsConstructor
 public class UserController {
     private final UserRepository repo;
     private final PasswordEncoder encoder;
+
+    @Autowired
+    public UserController(UserRepository repo, PasswordEncoder encoder) {
+        this.repo = repo;
+        this.encoder = encoder;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestParam("username") String username,

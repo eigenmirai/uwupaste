@@ -1,7 +1,7 @@
 package xyz.mirai666.uwupaste.api;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,10 +14,15 @@ import xyz.mirai666.uwupaste.model.entity.User;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 public class PasteController {
     private final PasteRepository pasteRepo;
     private final UserRepository userRepo;
+
+    @Autowired
+    public PasteController(PasteRepository pasteRepo, UserRepository userRepo) {
+        this.pasteRepo = pasteRepo;
+        this.userRepo = userRepo;
+    }
 
     @PostMapping("/paste")
     public Paste postPaste(@RequestBody PasteDto payload, Authentication authentication) {
